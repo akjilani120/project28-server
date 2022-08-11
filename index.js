@@ -20,10 +20,21 @@ async function run() {
         await client.connect();
         const userCollection = client.db("project28").collection("users");
         app.post("/users" , async(req , res) =>{
-            const users = req.body
-            console.log(users)
+            const users = req.body           
             const result = await userCollection.insertOne(users)
             res.send(result)
+        })
+        app.post("/users/login" , async(req , res) =>{
+          const user = req.body            
+          const email = user.email  
+          const password = user.password
+          const storeEmail = await userCollection.findOne({email})
+          const storePassword = await userCollection.findOne({password})          
+           if(storeEmail && storePassword){
+            return res.status(200).send({message:"login successful"})
+           }else{
+             return res.status(500).send({message:"login unsuccessful"})
+           }
         })
     }finally{}
 
